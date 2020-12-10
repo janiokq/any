@@ -29,7 +29,7 @@ impl ThreadPool {
 }
 impl Drop for ThreadPool {
     fn drop(&mut self){
-        for worker in &mut self.workers {
+        for _worker in &mut self.workers {
             self.sender.send(Message::Terminate).unwrap();
         }
         for worker in &mut self.workers {
