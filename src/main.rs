@@ -42,7 +42,6 @@ fn handle_connection(mut stream: TcpStream){
             stream.write(response.as_bytes()).unwrap();
             stream.flush().unwrap();
         }else if f.is_file(){
-
             // 下载文件
             let fileinfo =   f.metadata().unwrap();
             let mut file = fs::File::open(&p.path).unwrap();
@@ -50,15 +49,15 @@ fn handle_connection(mut stream: TcpStream){
             let n = file.read(&mut buf[..]).unwrap();
             let mut bufs = BytesMut::with_capacity(fileinfo.len() as usize);
             bufs.put(&buf[..]);
-
             let response = format!(
-                "HTTP/1.1 200 OK\r\nContent-Length: {}\r\nContent-type: {}\r\nContent-Disposition: {}\r\n\r\n{:?}",
+                "HTTP/1.1 200 OK\r\nContent-Length: {}\r\nContent-type: {}\r\nContent-Disposition: {}\r\n\r\n",
                 fileinfo.len(),
                 "application/octet-stream",
                 format!("attachment; filename={}",f.file_name().unwrap().to_str().unwrap()),
-                bufs
             );
-            stream.write(response.as_bytes()).unwrap();
+            let mut body:Vec<u8> =  response.into_bytes();
+            body.extend(buf);
+            stream.write(&*body).unwrap();
             stream.flush().unwrap();
 
         }
@@ -135,7 +134,7 @@ fn generate_header(plist:&mut Vec<&str>) -> String {
     let header  = format!("{}{}{}",start,content,end);
     header
 }
-pub fn gen_file_size(num: f64) -> String {
+fn gen_file_size(num: f64) -> String {
     let negative = if num.is_sign_positive() { "" } else { "-" };
     let num = num.abs();
     let units = ["B", "kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];

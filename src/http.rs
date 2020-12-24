@@ -53,9 +53,6 @@ pub struct Request {
 impl Request {
     pub fn new(parameter:&String) -> Option<Request> {
         let plist  =   parameter.split(" ").collect::<Vec<&str>>();
-
-        println!("当前的值 {}",plist[1]);
-
         if plist.len() >= 1 {
             return  Some(Request{
                 method:HttpReqMethod::new(&plist[0].to_string()),

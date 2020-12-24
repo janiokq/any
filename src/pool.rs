@@ -1,6 +1,5 @@
 use std::thread;
 use std::sync::{Arc,mpsc,Mutex};
-
 pub struct ThreadPool{
     workers:Vec<Worker>,
     sender:mpsc::Sender<Message>,
